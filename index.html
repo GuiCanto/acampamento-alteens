@@ -9,9 +9,19 @@
 body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f5f5; color: #111; padding-bottom: 40px; }
 
 /* Nav */
-#nav { background: #512da8; display: flex; position: sticky; top: 0; z-index: 20; }
+#nav { background: #512da8; display: flex; align-items: stretch; position: sticky; top: 0; z-index: 20; }
 .tab { flex: 1; padding: 14px 8px; font-size: 14px; font-weight: 600; color: rgba(255,255,255,0.65); background: none; border: none; cursor: pointer; font-family: inherit; border-bottom: 3px solid transparent; }
 .tab.active { color: #fff; border-bottom-color: #fff; }
+#bell-btn { background: none; border: none; color: rgba(255,255,255,0.8); font-size: 20px; padding: 0 14px; cursor: pointer; position: relative; flex-shrink: 0; }
+#bell-badge { position: absolute; top: 8px; right: 8px; background: #f44336; color: #fff; font-size: 10px; font-weight: 700; border-radius: 50%; width: 16px; height: 16px; display: none; align-items: center; justify-content: center; }
+
+/* Bell popup */
+#bell-popup { display: none; position: fixed; right: 8px; top: 56px; background: #fff; border: 1px solid #ddd; border-radius: 14px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); z-index: 100; min-width: 260px; max-width: 320px; overflow: hidden; }
+#bell-popup.open { display: block; }
+.bell-header { background: #fff8e1; padding: 10px 14px; font-size: 12px; font-weight: 700; color: #5d4037; border-bottom: 1px solid #f9a825; }
+.bell-item { padding: 10px 14px; font-size: 13px; color: #333; border-bottom: 1px solid #f5f5f5; }
+.bell-item:last-child { border-bottom: none; }
+.bell-empty { padding: 14px; font-size: 13px; color: #888; text-align: center; }
 
 /* Page header */
 .page-header { background: #fff; border-bottom: 1px solid #e0e0e0; padding: 12px 16px 10px; position: sticky; top: 48px; z-index: 10; }
@@ -36,14 +46,13 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
 .last-update { font-size: 11px; color: #999; }
 .btn-refresh { font-size: 12px; color: #512da8; background: none; border: 1px solid #512da8; border-radius: 8px; padding: 5px 10px; cursor: pointer; font-family: inherit; }
 
-.alert-warn { margin: 10px 16px 0; background: #fff8e1; border: 1px solid #f9a825; border-radius: 10px; padding: 9px 12px; font-size: 13px; color: #5d4037; }
 .card-list { padding: 10px 16px; display: flex; flex-direction: column; gap: 10px; }
 .empty-msg { text-align: center; color: #888; padding: 40px 20px; font-size: 14px; }
 
 /* ── PAYMENT CARD ── */
 .pay-card { background: #fff; border-radius: 12px; border: 1px solid #e0e0e0; padding: 10px 12px; display: flex; align-items: center; gap: 10px; transition: opacity 0.4s; }
-.pay-card.done { opacity: 0.45; }
-.pay-card.paid { opacity: 0.3; background: #f1f8e9; border-color: #a5d6a7; }
+.pay-card[data-paystate="contactados"] { opacity: 0.5; }
+.pay-card[data-paystate="pagos"] { opacity: 0.3; background: #f1f8e9; border-color: #a5d6a7; }
 .pay-photo { width: 42px; height: 42px; border-radius: 50%; object-fit: cover; flex-shrink: 0; cursor: pointer; background: #ede7f6; }
 .pay-photo-ph { width: 42px; height: 42px; border-radius: 50%; background: #ede7f6; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; color: #512da8; flex-shrink: 0; }
 .pay-info { flex: 1; min-width: 0; }
@@ -51,8 +60,8 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
 .pay-parent { font-size: 12px; color: #555; margin-top: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .multi { display: inline-block; background: #fbe9e7; color: #bf360c; font-size: 10px; padding: 1px 6px; border-radius: 20px; margin-left: 5px; font-weight: 700; vertical-align: middle; }
 .btn-wa { display: inline-flex; align-items: center; background: #25D366; color: #fff; border-radius: 10px; padding: 9px 12px; font-size: 13px; font-weight: 700; text-decoration: none; white-space: nowrap; flex-shrink: 0; border: none; cursor: pointer; }
-.btn-contacted { font-size: 12px; color: #1565c0; background: #e3f2fd; border-radius: 8px; padding: 8px 10px; white-space: nowrap; flex-shrink: 0; font-weight: 600; display: none; }
-.btn-paid-badge { font-size: 12px; color: #2e7d32; background: #e8f5e9; border-radius: 8px; padding: 8px 10px; white-space: nowrap; flex-shrink: 0; font-weight: 600; display: none; }
+.badge-contacted { font-size: 12px; color: #1565c0; background: #e3f2fd; border-radius: 8px; padding: 8px 10px; white-space: nowrap; flex-shrink: 0; font-weight: 600; }
+.badge-paid { font-size: 12px; color: #2e7d32; background: #e8f5e9; border-radius: 8px; padding: 8px 10px; white-space: nowrap; flex-shrink: 0; font-weight: 600; }
 .no-phone { font-size: 12px; color: #999; background: #f5f5f5; border-radius: 8px; padding: 8px 10px; white-space: nowrap; flex-shrink: 0; }
 .btn-more { background: none; border: none; font-size: 20px; color: #888; cursor: pointer; padding: 4px 6px; flex-shrink: 0; line-height: 1; border-radius: 8px; }
 
@@ -117,6 +126,13 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
 <div id="nav">
   <button class="tab active" id="tab-pay" onclick="showPage('pay')">Pagamentos</button>
   <button class="tab" id="tab-roster" onclick="showPage('roster')">Inscritos</button>
+  <button id="bell-btn" onclick="toggleBell(event)" title="Notificacoes">&#128276;<div id="bell-badge"></div></button>
+</div>
+
+<!-- Bell popup -->
+<div id="bell-popup">
+  <div class="bell-header">&#9888; Sem telefone valido</div>
+  <div id="bell-list"></div>
 </div>
 
 <!-- ═══ PAGE 1: PAGAMENTOS ═══ -->
@@ -141,7 +157,6 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
     <span class="last-update" id="last-update"></span>
     <button class="btn-refresh" onclick="loadData()">&#8635; Atualizar</button>
   </div>
-  <div class="alert-warn" id="alert-nophone" style="display:none;">Vitoria Marques Passos tem telefone invalido. Contatar manualmente.</div>
   <div id="pay-error" class="error-box" style="display:none;">Nao foi possivel carregar os dados.<br><button class="btn-retry" onclick="loadData()">Tentar novamente</button></div>
   <div class="card-list" id="pay-list"><p class="empty-msg">Carregando dados da planilha...</p></div>
 </div>
@@ -169,7 +184,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
 </div>
 
 <!-- Menu popup -->
-<div id="overlay" onclick="closeMenu()"></div>
+<div id="overlay" onclick="closeAll()"></div>
 <div id="menu-popup">
   <button class="menu-item danger" id="menu-undo" onclick="menuUndo()">Desfazer contactado</button>
   <div class="menu-separator"></div>
@@ -192,13 +207,13 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
 var SHEET_URL = 'https://docs.google.com/spreadsheets/d/1k8z0-76nVw15gvWAKidFPWJAgKU-tAMoXzT9qxm6s3M/gviz/tq?tqx=out:json';
 var APPS_URL = 'https://script.google.com/macros/s/AKfycbwNIL8HTNstFL5VLv3iXg_nenDwDQWdZq3B3Z8CqWK1oWH7rxAyJrvaUFcN8bWDs_Gb/exec';
 var MSG = encodeURIComponent('Oi tudo bem? Nos estamos finalizando os preparativos para o nosso acampamento do Alteens, vimos que voce fez a inscricao do seu filho(a), mas nao encontrei o comprovante de pagamento, se voce ja fez, poderia me encaminhar aqui por gentileza? caso nao me avisa pra que a gente possa efetuar o pagamento.');
-var KEY_C = 'acamp_cont_v3';
-var KEY_P = 'acamp_paid_v3';
 
-var allContacts = [];
+// v4: stores child names (strings) instead of numeric indices
+var KEY_C = 'acamp_cont_v4';
+var KEY_P = 'acamp_paid_v4';
+
 var allCampers = [];
-var pgCount = 0;
-var activeMenuIdx = -1;
+var activeMenuName = null;
 var loadTimer = null;
 var payFilter = 'todos';
 var rosterFilter = 'todos';
@@ -232,6 +247,29 @@ function showPage(p){
 function openLightbox(src){ document.getElementById('lightbox-img').src=src; document.getElementById('lightbox').classList.add('open'); }
 function closeLightbox(){ document.getElementById('lightbox').classList.remove('open'); document.getElementById('lightbox-img').src=''; }
 
+// ── BELL ──
+function toggleBell(e){
+  e.stopPropagation();
+  var p=document.getElementById('bell-popup');
+  p.classList.toggle('open');
+}
+function closeBell(){ document.getElementById('bell-popup').classList.remove('open'); }
+
+function updateBell(){
+  var noPhone=allCampers.filter(function(d){ return !d.pago && !d.phone; });
+  var badge=document.getElementById('bell-badge');
+  var list=document.getElementById('bell-list');
+  if(noPhone.length>0){
+    badge.textContent=noPhone.length; badge.style.display='flex';
+    list.innerHTML=noPhone.map(function(d){
+      return '<div class="bell-item"><strong>'+d.child+'</strong><br><span style="color:#888;font-size:12px">'+d.parent+'</span></div>';
+    }).join('');
+  } else {
+    badge.style.display='none';
+    list.innerHTML='<div class="bell-empty">Todos tem telefone valido.</div>';
+  }
+}
+
 // ── DATA LOADING ──
 window.google=window.google||{};
 window.google.visualization=window.google.visualization||{};
@@ -243,7 +281,7 @@ window.handleSheetData=function(data){
   var old=document.getElementById('jsonp-script');
   if(old) old.parentNode.removeChild(old);
   try{
-    var rows=data.table.rows; pgCount=0;
+    var rows=data.table.rows;
     var byName={};
     for(var i=0;i<rows.length;i++){
       var c=rows[i].c;
@@ -251,7 +289,6 @@ window.handleSheetData=function(data){
       var name=getVal(c[1]).trim(); if(!name) continue;
       var pago=getVal(c[11]).toUpperCase();
       var isPaid=pago.indexOf('PG')>=0;
-      if(isPaid) pgCount++;
       var ts=getVal(c[0]);
       if(!byName[name]||ts>byName[name].ts){
         var wasPaid=byName[name]?byName[name].pago:false;
@@ -259,10 +296,8 @@ window.handleSheetData=function(data){
           age:getVal(c[4]),camiseta:getVal(c[9]),alergia:getVal(c[7]),photo:getVal(c[10]),pago:isPaid||wasPaid};
       } else if(isPaid){ byName[name].pago=true; }
     }
-    var sorted=Object.keys(byName).map(function(k){return byName[k];}).sort(function(a,b){return a.child.localeCompare(b.child);});
-    allCampers=sorted;
-    allContacts=sorted.filter(function(d){return !d.pago;});
-    renderPay(); renderRoster();
+    allCampers=Object.keys(byName).map(function(k){return byName[k];}).sort(function(a,b){return a.child.localeCompare(b.child);});
+    renderPay(); renderRoster(); updateBell();
     var now=new Date();
     document.getElementById('last-update').textContent='Atualizado '+now.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
   }catch(e){showPayError();showRosterError();}
@@ -288,32 +323,41 @@ function showRosterError(){ document.getElementById('roster-error').style.displa
 // ══════════════════════════
 // ── PAGE 1: PAGAMENTOS ──
 // ══════════════════════════
-function updatePayCounters(){
-  var done=getList(KEY_C).length, paid=getList(KEY_P).length;
-  document.getElementById('ctr-pend').textContent=Math.max(0,allContacts.length-done-paid);
-  document.getElementById('ctr-contacted').textContent=done;
-  document.getElementById('ctr-pg').textContent=pgCount+paid;
-}
 
-function getPayState(i){
+// State uses child names as keys (stored in localStorage as arrays of strings)
+function getPayStateName(name, pagoFromSheet){
   var paid=getList(KEY_P), contacted=getList(KEY_C);
-  if(paid.indexOf(i)>=0) return 'pagos';
-  if(contacted.indexOf(i)>=0) return 'contactados';
+  if(pagoFromSheet || paid.indexOf(name)>=0) return 'pagos';
+  if(contacted.indexOf(name)>=0) return 'contactados';
   return 'pendentes';
 }
 
+function updatePayCounters(){
+  var pend=0, cont=0, pag=0;
+  allCampers.forEach(function(d){
+    var s=getPayStateName(d.child,d.pago);
+    if(s==='pendentes') pend++;
+    else if(s==='contactados') cont++;
+    else pag++;
+  });
+  document.getElementById('ctr-pend').textContent=pend;
+  document.getElementById('ctr-contacted').textContent=cont;
+  document.getElementById('ctr-pg').textContent=pag;
+}
+
 function applyPayStates(){
-  var contacted=getList(KEY_C), paid=getList(KEY_P);
-  for(var i=0;i<allContacts.length;i++){
-    var card=document.getElementById('pc'+i);
-    if(!card) continue;
-    var wa=document.getElementById('wa'+i), bd=document.getElementById('bd'+i), bp=document.getElementById('bp'+i);
-    var isPaid=paid.indexOf(i)>=0, isDone=contacted.indexOf(i)>=0;
-    card.classList.toggle('paid',isPaid); card.classList.toggle('done',!isPaid&&isDone);
-    if(wa) wa.style.display=(isPaid||isDone)?'none':'inline-flex';
-    if(bd) bd.style.display=(!isPaid&&isDone)?'inline-block':'none';
-    if(bp) bp.style.display=isPaid?'inline-block':'none';
-  }
+  allCampers.forEach(function(d){
+    var card=document.getElementById('pc-'+d.child.replace(/\s+/g,'_'));
+    if(!card) return;
+    var state=getPayStateName(d.child,d.pago);
+    card.dataset.paystate=state;
+    var waEl=document.getElementById('wa-'+d.child.replace(/\s+/g,'_'));
+    var bdEl=document.getElementById('bd-'+d.child.replace(/\s+/g,'_'));
+    var bpEl=document.getElementById('bp-'+d.child.replace(/\s+/g,'_'));
+    if(waEl) waEl.style.display=(state==='pendentes')?'inline-flex':'none';
+    if(bdEl) bdEl.style.display=(state==='contactados')?'inline-block':'none';
+    if(bpEl) bpEl.style.display=(state==='pagos')?'inline-block':'none';
+  });
   updatePayCounters();
   applyPayFilter();
 }
@@ -327,82 +371,92 @@ function setPayFilter(f,btn){
 
 function applyPayFilter(){
   var q=norm(document.getElementById('pay-search').value||'');
-  var visible=0;
-  for(var i=0;i<allContacts.length;i++){
-    var card=document.getElementById('pc'+i); if(!card) continue;
-    var state=getPayState(i);
+  document.querySelectorAll('.pay-card').forEach(function(card){
+    var state=card.dataset.paystate||'pendentes';
     var matchFilter=(payFilter==='todos'||payFilter===state);
     var matchSearch=(!q||card.dataset.search.indexOf(q)>=0);
-    var show=matchFilter&&matchSearch;
-    card.style.display=show?'flex':'none';
-    if(show) visible++;
-  }
+    card.style.display=(matchFilter&&matchSearch)?'flex':'none';
+  });
 }
 
-function markContacted(i){
-  var a=getList(KEY_C); if(a.indexOf(i)<0){a.push(i);saveList(KEY_C,a);}
+function markContacted(name){
+  var a=getList(KEY_C); if(a.indexOf(name)<0){a.push(name);saveList(KEY_C,a);}
   setTimeout(applyPayStates,600);
 }
 
 function renderPay(){
   var phoneCount={};
-  allContacts.forEach(function(d){if(d.phone) phoneCount[d.phone]=(phoneCount[d.phone]||0)+1;});
+  allCampers.forEach(function(d){if(d.phone) phoneCount[d.phone]=(phoneCount[d.phone]||0)+1;});
   var html='';
-  allContacts.forEach(function(d,i){
+  allCampers.forEach(function(d){
+    var safeId=d.child.replace(/\s+/g,'_');
     var multi=(d.phone&&phoneCount[d.phone]>1)?'<span class="multi">+irmao</span>':'';
     var photoHtml=d.photo
-      ?'<img class="pay-photo" src="'+d.photo+'" onclick="openLightbox(\''+d.photo+'\')" onerror="this.style.display=\'none\';document.getElementById(\'pph'+i+'\').style.display=\'flex\'">'
-       +'<div class="pay-photo-ph" id="pph'+i+'" style="display:none">'+initials(d.child)+'</div>'
+      ?'<img class="pay-photo" src="'+d.photo+'" onclick="openLightbox(\''+d.photo+'\')" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'">'
+       +'<div class="pay-photo-ph" style="display:none">'+initials(d.child)+'</div>'
       :'<div class="pay-photo-ph">'+initials(d.child)+'</div>';
-    var btns=d.phone
-      ?'<a id="wa'+i+'" class="btn-wa" href="https://wa.me/'+d.phone+'?text='+MSG+'" target="_blank" onclick="markContacted('+i+')">WhatsApp</a>'
-       +'<span id="bd'+i+'" class="btn-contacted">Contactado</span>'
-       +'<span id="bp'+i+'" class="btn-paid-badge">Pago ✓</span>'
-      :'<span class="no-phone">Sem telefone</span>';
-    html+='<div id="pc'+i+'" class="pay-card" data-search="'+norm(d.child+' '+d.parent)+'">'
+    var btns;
+    if(d.pago){
+      btns='<span class="badge-paid">Pago ✓</span>';
+    } else if(d.phone){
+      btns='<a id="wa-'+safeId+'" class="btn-wa" href="https://wa.me/'+d.phone+'?text='+MSG+'" target="_blank" onclick="markContacted(\''+escHtml(d.child)+'\')">WhatsApp</a>'
+          +'<span id="bd-'+safeId+'" class="badge-contacted" style="display:none">Contactado</span>'
+          +'<span id="bp-'+safeId+'" class="badge-paid" style="display:none">Pago ✓</span>';
+    } else {
+      btns='<span class="no-phone">Sem telefone</span>'
+          +'<span id="bp-'+safeId+'" class="badge-paid" style="display:none">Pago ✓</span>';
+    }
+    var showMenu=!d.pago;
+    html+='<div id="pc-'+safeId+'" class="pay-card" data-paystate="'+getPayStateName(d.child,d.pago)+'" data-search="'+norm(d.child+' '+d.parent)+'" data-name="'+escHtml(d.child)+'">'
       +photoHtml
       +'<div class="pay-info"><div class="pay-name">'+d.child+multi+'</div><div class="pay-parent">'+d.parent+'</div></div>'
-      +btns+'<button id="more'+i+'" class="btn-more" onclick="toggleMenu(event,'+i+')">&#8942;</button>'
+      +btns
+      +(showMenu?'<button class="btn-more" onclick="toggleMenu(event,\''+escHtml(d.child)+'\')">&#8942;</button>':'')
       +'</div>';
   });
-  document.getElementById('pay-list').innerHTML=html||'<p class="empty-msg">Todos pagaram!</p>';
+  document.getElementById('pay-list').innerHTML=html||'<p class="empty-msg">Nenhum resultado.</p>';
   document.getElementById('pay-stats').style.display='flex';
   document.getElementById('pay-toolbar').style.display='flex';
   document.getElementById('pay-search').disabled=false;
-  document.getElementById('pay-subtitle').textContent='Acampamento Alteens — '+allContacts.length+' pendentes na planilha';
-  if(allContacts.some(function(d){return !d.phone;})) document.getElementById('alert-nophone').style.display='block';
+  var unpaid=allCampers.filter(function(d){return !d.pago;}).length;
+  document.getElementById('pay-subtitle').textContent='Acampamento Alteens — '+unpaid+' pendentes na planilha';
   applyPayStates();
 }
 
 // ── PAGE 1 MENU ──
-function toggleMenu(event,idx){
+function toggleMenu(event,name){
   event.stopPropagation();
-  if(activeMenuIdx===idx){closeMenu();return;}
-  activeMenuIdx=idx;
-  var btn=document.getElementById('more'+idx), popup=document.getElementById('menu-popup');
-  var c=getList(KEY_C),p=getList(KEY_P);
-  document.getElementById('menu-undo').style.display=(c.indexOf(idx)>=0&&p.indexOf(idx)<0)?'block':'none';
-  document.getElementById('menu-pg').style.display=p.indexOf(idx)<0?'block':'none';
+  if(activeMenuName===name){closeMenu();return;}
+  activeMenuName=name;
+  var btn=event.currentTarget, popup=document.getElementById('menu-popup');
+  var c=getList(KEY_C), p=getList(KEY_P);
+  document.getElementById('menu-undo').style.display=(c.indexOf(name)>=0&&p.indexOf(name)<0)?'block':'none';
+  document.getElementById('menu-pg').style.display=p.indexOf(name)<0?'block':'none';
   var rect=btn.getBoundingClientRect();
   popup.style.right='16px'; popup.style.left='auto'; popup.style.top=(rect.bottom+4)+'px';
   popup.style.display='block'; document.getElementById('overlay').style.display='block';
 }
-function closeMenu(){ activeMenuIdx=-1; document.getElementById('menu-popup').style.display='none'; document.getElementById('overlay').style.display='none'; }
-function menuUndo(){ var idx=activeMenuIdx; closeMenu(); saveList(KEY_C,getList(KEY_C).filter(function(x){return x!==idx;})); applyPayStates(); }
+function closeMenu(){ activeMenuName=null; document.getElementById('menu-popup').style.display='none'; document.getElementById('overlay').style.display='none'; }
+function closeAll(){ closeMenu(); closeBell(); }
+function menuUndo(){
+  var name=activeMenuName; closeMenu();
+  saveList(KEY_C,getList(KEY_C).filter(function(x){return x!==name;}));
+  applyPayStates();
+}
 function menuConfirmPG(){
-  var idx=activeMenuIdx; closeMenu(); activeMenuIdx=idx;
-  document.getElementById('dialog-msg').innerHTML='Marcar <strong>'+allContacts[idx].child+'</strong> como pago (PG) na planilha?';
+  var name=activeMenuName; closeMenu(); activeMenuName=name;
+  document.getElementById('dialog-msg').innerHTML='Marcar <strong>'+name+'</strong> como pago (PG) na planilha?';
   document.getElementById('confirm-dialog').classList.add('show');
 }
-function closeDialog(){ document.getElementById('confirm-dialog').classList.remove('show'); activeMenuIdx=-1; }
+function closeDialog(){ document.getElementById('confirm-dialog').classList.remove('show'); activeMenuName=null; }
 function executePG(){
-  var idx=activeMenuIdx; var d=allContacts[idx]; closeDialog();
-  fetch(APPS_URL+'?action=pg&name='+encodeURIComponent(d.child))
+  var name=activeMenuName; closeDialog();
+  fetch(APPS_URL+'?action=pg&name='+encodeURIComponent(name))
     .then(function(r){return r.json();})
     .then(function(){
-      var p=getList(KEY_P); if(p.indexOf(idx)<0){p.push(idx);saveList(KEY_P,p);}
-      saveList(KEY_C,getList(KEY_C).filter(function(x){return x!==idx;}));
-      applyPayStates();
+      var p=getList(KEY_P); if(p.indexOf(name)<0){p.push(name);saveList(KEY_P,p);}
+      saveList(KEY_C,getList(KEY_C).filter(function(x){return x!==name;}));
+      applyPayStates(); updateBell();
     })
     .catch(function(){ alert('Erro ao atualizar planilha. Verifique conexao.'); });
 }
@@ -429,10 +483,10 @@ function applyRosterFilter(){
 function renderRoster(){
   var html='';
   allCampers.forEach(function(d,i){
-    var alergia=(d.alergia&&d.alergia.trim()&&norm(d.alergia)!=='nao'&&norm(d.alergia)!=='nao')?d.alergia:'Nenhuma';
+    var alergia=(d.alergia&&d.alergia.trim()&&norm(d.alergia)!=='nao')?d.alergia:'Nenhuma';
     var photoHtml=d.photo
-      ?'<img class="camper-photo" src="'+d.photo+'" onclick="openLightbox(\''+d.photo+'\')" onerror="this.style.display=\'none\';document.getElementById(\'cph'+i+'\').style.display=\'flex\'">'
-       +'<div class="camper-photo-ph" id="cph'+i+'" style="display:none">'+initials(d.child)+'</div>'
+      ?'<img class="camper-photo" src="'+d.photo+'" onclick="openLightbox(\''+d.photo+'\')" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'">'
+       +'<div class="camper-photo-ph" style="display:none">'+initials(d.child)+'</div>'
       :'<div class="camper-photo-ph">'+initials(d.child)+'</div>';
     var paidBadge=d.pago?'<span class="badge badge-pg">Pago ✓</span>':'<span class="badge badge-unpaid">Pendente</span>';
     var search=norm(d.child+' '+d.parent+' '+(d.alergia||''));
@@ -492,11 +546,17 @@ function saveEdit(i){
     .then(function(){
       d.parent=newParent; d.phone=cleanPhone(newPhone)||newPhone; d.alergia=newAlergia; d.camiseta=newShirt;
       editingIdx=-1; cancelEdit(i);
-      var badges=document.querySelectorAll('#cc'+i+' .badge-shirt');
-      badges.forEach(function(b){b.textContent='Camiseta '+newShirt;});
+      document.querySelectorAll('#cc'+i+' .badge-shirt').forEach(function(b){b.textContent='Camiseta '+newShirt;});
     })
     .catch(function(){ alert('Erro ao salvar. Verifique sua conexao.'); cancelEdit(i); });
 }
+
+// Close bell when clicking outside
+document.addEventListener('click', function(e){
+  if(!document.getElementById('bell-btn').contains(e.target) && !document.getElementById('bell-popup').contains(e.target)){
+    closeBell();
+  }
+});
 
 loadData();
 </script>
