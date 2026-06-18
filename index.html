@@ -326,7 +326,7 @@ function markContacted(i){
   setTimeout(applyPayStates,600);
 }
 function filterPay(q){
-  q=(q||'').toLowerCase();
+  q=norm(q);
   document.querySelectorAll('.pay-card').forEach(function(el){
     el.style.display=(!q||el.dataset.search.indexOf(q)>=0)?'flex':'none';
   });
@@ -342,7 +342,7 @@ function renderPay(){
        +'<span id="bd'+i+'" class="btn-contacted">Contactado</span>'
        +'<span id="bp'+i+'" class="btn-paid-badge">Pago ✓</span>'
       :'<span class="no-phone">Sem telefone</span>';
-    html+='<div id="pc'+i+'" class="pay-card" data-search="'+(d.child+' '+d.parent).toLowerCase()+'">'
+    html+='<div id="pc'+i+'" class="pay-card" data-search="'+norm(d.child+' '+d.parent)+'">'
       +'<div class="avatar">'+initials(d.child)+'</div>'
       +'<div class="pay-info"><div class="pay-name">'+d.child+multi+'</div><div class="pay-parent">'+d.parent+'</div></div>'
       +btns
@@ -410,7 +410,7 @@ function executePG(){
 var editingIdx = -1;
 
 function filterRoster(q){
-  q=(q||'').toLowerCase();
+  q=norm(q);
   document.querySelectorAll('.camper-card').forEach(function(el){
     el.style.display=(!q||el.dataset.search.indexOf(q)>=0)?'':'none';
   });
@@ -428,7 +428,7 @@ function renderRoster(){
       : '<span class="badge badge-unpaid">Pendente</span>';
     var alergia = d.alergia && d.alergia.trim() && d.alergia.toLowerCase()!=='nao' && d.alergia.toLowerCase()!=='não'
       ? d.alergia : 'Nenhuma';
-    var search = (d.child+' '+d.parent+' '+(d.alergia||'')).toLowerCase();
+    var search = norm(d.child+' '+d.parent+' '+(d.alergia||''));
     html+='<div class="camper-card" id="cc'+i+'" data-search="'+search+'">'
       +'<div class="camper-top">'
         +photoHtml
@@ -515,6 +515,9 @@ function saveEdit(i){
 
 function escHtml(s){
   return (s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+function norm(s){
+  return (s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'');
 }
 
 // ── INIT ──
