@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Acampamento - Pagamentos Pendentes</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f5f5; color: #111; }
+#header { background: #fff; border-bottom: 1px solid #e0e0e0; padding: 14px 16px 10px; position: sticky; top: 0; z-index: 10; }
+#header h1 { font-size: 17px; font-weight: 700; margin-bottom: 6px; }
+#subtitulo { font-size: 12px; color: #666; margin-bottom: 8px; }
+#search { width: 100%; padding: 9px 13px; font-size: 15px; border: 1px solid #ccc; border-radius: 10px; background: #f0f0f0; outline: none; -webkit-appearance: none; }
+.stats { display: flex; gap: 8px; padding: 10px 16px 0; }
+.stat { flex: 1; background: #fff; border-radius: 10px; padding: 10px; text-align: center; border: 1px solid #e0e0e0; }
+.stat-n { font-size: 20px; font-weight: 700; }
+.stat-l { font-size: 11px; color: #666; margin-top: 1px; }
+.alert { margin: 10px 16px 0; background: #fff8e1; border: 1px solid #f9a825; border-radius: 10px; padding: 9px 12px; font-size: 13px; color: #5d4037; }
+#list { padding: 10px 16px 40px; display: flex; flex-direction: column; gap: 8px; }
+.card { background: #fff; border-radius: 12px; border: 1px solid #e0e0e0; padding: 13px 14px; display: flex; align-items: center; gap: 12px; transition: opacity 0.4s; }
+.card.done { opacity: 0.4; }
+.avatar { width: 40px; height: 40px; border-radius: 50%; background: #ede7f6; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; color: #512da8; flex-shrink: 0; }
+.info { flex: 1; min-width: 0; }
+.child { font-size: 14px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.parent { font-size: 12px; color: #555; margin-top: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.multi { display: inline-block; background: #fbe9e7; color: #bf360c; font-size: 10px; padding: 1px 6px; border-radius: 20px; margin-left: 5px; font-weight: 700; vertical-align: middle; }
+.btn-wa { display: inline-flex; align-items: center; background: #25D366; color: #fff; border-radius: 10px; padding: 9px 15px; font-size: 13px; font-weight: 700; text-decoration: none; white-space: nowrap; flex-shrink: 0; }
+.btn-done { font-size: 12px; color: #2e7d32; background: #e8f5e9; border-radius: 8px; padding: 8px 11px; white-space: nowrap; flex-shrink: 0; font-weight: 600; display: none; }
+.no-phone { font-size: 12px; color: #999; background: #f5f5f5; border-radius: 8px; padding: 8px 11px; white-space: nowrap; flex-shrink: 0; }
+#loading { text-align: center; padding: 40px 20px; color: #666; font-size: 15px; }
+#error-msg { margin: 12px 16px; background: #ffebee; border: 1px solid #e57373; border-radius: 10px; padding: 12px 14px; font-size: 13px; color: #b71c1c; display: none; }
+.reload { display: inline-block; margin-top: 6px; font-size: 13px; color: #1976d2; text-decoration: underline; cursor: pointer; background: none; border: none; padding: 0; font-family: inherit; }
+</style>
+</head>
+<body>
+
+<div id="header">
+  <h1>Pagamentos Pendentes</h1>
+  <p id="subtitulo">Acampamento Alteens &mdash; carregando...</p>
+  <input type="search" id="search" placeholder="Buscar filho ou responsavel..." oninput="filterList(this.value)" disabled>
+</div>
+
+<div class="stats" id="stats" style="display:none;">
+  <div class="stat"><div class="stat-n" id="ctr-pend">-</div><div class="stat-l">pendentes</div></div>
+  <div class="stat"><div class="stat-n" id="ctr-done">-</div><div class="stat-l">contactados</div></div>
+  <div class="stat"><div class="stat-n" id="ctr-pg">-</div><div class="stat-l">ja pagaram</div></div>
+</div>
+
+<div class="alert" id="alert-nophone" style="display:none;">
+  Atencao: <strong>Vitoria Marques Passos</strong> tem telefone invalido. Contatar manualmente.
+</div>
+
+<div id="error-msg">
+  Nao foi possivel carregar os dados. Verifique sua conexao com a internet.<br>
+  <button class="reload" onclick="loadData()">Tentar novamente</button>
+</div>
+
+<div id="list"><div id="loading">Carregando dados da planilha...</div></div>
+
+<script>
+var KEY = 'acamp_contactados_v2';
+var MSG = encodeURIComponent('Oi tudo bem? Nos estamos finalizando os preparativos para o nosso acampamento do Alteens, vimos que voce fez a inscricao do seu filho(a), mas nao encontrei o comprovante de pagamento, se voce ja fez, poderia me encaminhar aqui por gentileza? caso nao me avisa pra que a gente possa efetuar o pagamento.');
+var allContacts = [];
+var pgCount = 0;
+var loadTimer = null;
+
+function getVal(cell) {
+  if (!cell || cell.v === null || cell.v === undefined) return '';
+  return String(cell.v);
+}
+
+function cleanPhone(raw) {
+  if (!raw || raw.indexOf('#') >= 0) return null;
+  var digits = raw.replace(/\D/g, '');
+  if (!digits || digits.length < 8) return null;
+  if (digits.charAt(0) === '0') digits = digits.slice(1);
+  if (digits.slice(0, 2) !== '55') digits = '55' + digits;
+  return digits;
+}
+
+function initials(name) {
+  var p = name.trim().split(/\s+/);
+  return p.length === 1 ? p[0][0].toUpperCase() : (p[0][0] + p[p.length-1][0]).toUpperCase();
+}
+
+function getContacted() {
+  try { return JSON.parse(localStorage.getItem(KEY) || '[]'); } catch(e) { return []; }
+}
+
+function saveContacted(arr) {
+  try { localStorage.setItem(KEY, JSON.stringify(arr)); } catch(e) {}
+}
+
+function updateCounters() {
+  var done = getContacted().length;
+  document.getElementById('ctr-pend').textContent = allContacts.length - done;
+  document.getElementById('ctr-done').textContent = done;
+  document.getElementById('ctr-pg').textContent = pgCount;
+}
+
+function markContacted(idx) {
+  var arr = getContacted();
+  if (arr.indexOf(idx) === -1) { arr.push(idx); saveContacted(arr); }
+  setTimeout(applyContacted, 600);
+}
+
+function applyContacted() {
+  var arr = getContacted();
+  for (var i = 0; i < allContacts.length; i++) {
+    var card = document.getElementById('card' + i);
+    var btnWa = document.getElementById('wa' + i);
+    var btnDone = document.getElementById('done' + i);
+    if (!card) continue;
+    if (arr.indexOf(i) >= 0) {
+      card.classList.add('done');
+      if (btnWa) btnWa.style.display = 'none';
+      if (btnDone) btnDone.style.display = 'inline-block';
+    } else {
+      card.classList.remove('done');
+      if (btnWa) btnWa.style.display = 'inline-flex';
+      if (btnDone) btnDone.style.display = 'none';
+    }
+  }
+  updateCounters();
+}
+
+function filterList(q) {
+  q = (q || '').toLowerCase();
+  var cards = document.querySelectorAll('.card');
+  for (var i = 0; i < cards.length; i++) {
+    var text = cards[i].getAttribute('data-search');
+    cards[i].style.display = (!q || text.indexOf(q) >= 0) ? 'flex' : 'none';
+  }
+}
+
+function renderList() {
+  var phoneCount = {};
+  for (var i = 0; i < allContacts.length; i++) {
+    var ph = allContacts[i].phone;
+    if (ph) phoneCount[ph] = (phoneCount[ph] || 0) + 1;
+  }
+  var html = '';
+  for (var i = 0; i < allContacts.length; i++) {
+    var d = allContacts[i];
+    var multi = (d.phone && phoneCount[d.phone] > 1) ? '<span class="multi">+irmao</span>' : '';
+    var searchText = (d.child + ' ' + d.parent).toLowerCase();
+    var btns = d.phone
+      ? '<a id="wa' + i + '" class="btn-wa" href="https://wa.me/' + d.phone + '?text=' + MSG + '" target="_blank" onclick="markContacted(' + i + ')">WhatsApp</a><span id="done' + i + '" class="btn-done">Contactado</span>'
+      : '<span class="no-phone">Sem telefone</span>';
+    html += '<div id="card' + i + '" class="card" data-search="' + searchText + '">'
+          + '<div class="avatar">' + initials(d.child) + '</div>'
+          + '<div class="info"><div class="child">' + d.child + multi + '</div><div class="parent">' + d.parent + '</div></div>'
+          + btns + '</div>';
+  }
+  document.getElementById('list').innerHTML = html || '<div id="loading">Nenhum pendente encontrado.</div>';
+  document.getElementById('stats').style.display = 'flex';
+  document.getElementById('search').disabled = false;
+  document.getElementById('subtitulo').textContent = 'Acampamento Alteens — ' + allContacts.length + ' pendentes';
+  if (allContacts.some(function(d) { return !d.phone; }))
+    document.getElementById('alert-nophone').style.display = 'block';
+  applyContacted();
+}
+
+window.handleSheetData = function(data) {
+  if (loadTimer) { clearTimeout(loadTimer); loadTimer = null; }
+  var old = document.getElementById('jsonp-script');
+  if (old) old.parentNode.removeChild(old);
+
+  try {
+    var rows = data.table.rows;
+    pgCount = 0;
+    var byName = {};
+    for (var i = 0; i < rows.length; i++) {
+      var c = rows[i].c;
+      if (!c || c.length < 12) continue;
+      var pago = getVal(c[11]).toUpperCase();
+      if (pago.indexOf('PG') >= 0) { pgCount++; continue; }
+      var name = getVal(c[1]).trim();
+      if (!name) continue;
+      var ts = getVal(c[0]);
+      if (!byName[name] || ts > byName[name].ts) {
+        byName[name] = { ts: ts, child: name, parent: getVal(c[5]).trim(), phone: cleanPhone(getVal(c[6])) };
+      }
+    }
+    allContacts = Object.keys(byName).map(function(k) { return byName[k]; })
+      .sort(function(a, b) { return a.child.localeCompare(b.child); });
+    renderList();
+  } catch(e) {
+    showError();
+  }
+};
+
+function showError() {
+  document.getElementById('list').innerHTML = '';
+  document.getElementById('error-msg').style.display = 'block';
+  document.getElementById('subtitulo').textContent = 'Acampamento Alteens — erro ao carregar';
+}
+
+function loadData() {
+  document.getElementById('list').innerHTML = '<div id="loading">Carregando dados da planilha...</div>';
+  document.getElementById('error-msg').style.display = 'none';
+  document.getElementById('stats').style.display = 'none';
+  document.getElementById('search').disabled = true;
+
+  var old = document.getElementById('jsonp-script');
+  if (old) old.parentNode.removeChild(old);
+
+  var script = document.createElement('script');
+  script.id = 'jsonp-script';
+  script.src = 'https://docs.google.com/spreadsheets/d/1k8z0-76nVw15gvWAKidFPWJAgKU-tAMoXzT9qxm6s3M/gviz/tq?tqx=out:json&callback=handleSheetData';
+  script.onerror = showError;
+  document.head.appendChild(script);
+
+  loadTimer = setTimeout(showError, 10000);
+}
+
+loadData();
+</script>
+</body>
+</html>
