@@ -161,6 +161,11 @@ function renderList() {
   applyContacted();
 }
 
+window.google = window.google || {};
+window.google.visualization = window.google.visualization || {};
+window.google.visualization.Query = window.google.visualization.Query || {};
+window.google.visualization.Query.setResponse = function(data) { window.handleSheetData(data); };
+
 window.handleSheetData = function(data) {
   if (loadTimer) { clearTimeout(loadTimer); loadTimer = null; }
   var old = document.getElementById('jsonp-script');
