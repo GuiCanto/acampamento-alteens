@@ -8,28 +8,53 @@
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f5f5; color: #111; }
 #header { background: #fff; border-bottom: 1px solid #e0e0e0; padding: 14px 16px 10px; position: sticky; top: 0; z-index: 10; }
-#header h1 { font-size: 17px; font-weight: 700; margin-bottom: 6px; }
+#header h1 { font-size: 17px; font-weight: 700; margin-bottom: 4px; }
 #subtitulo { font-size: 12px; color: #666; margin-bottom: 8px; }
 #search { width: 100%; padding: 9px 13px; font-size: 15px; border: 1px solid #ccc; border-radius: 10px; background: #f0f0f0; outline: none; -webkit-appearance: none; }
 .stats { display: flex; gap: 8px; padding: 10px 16px 0; }
 .stat { flex: 1; background: #fff; border-radius: 10px; padding: 10px; text-align: center; border: 1px solid #e0e0e0; }
 .stat-n { font-size: 20px; font-weight: 700; }
 .stat-l { font-size: 11px; color: #666; margin-top: 1px; }
+.toolbar { display: flex; align-items: center; justify-content: space-between; padding: 10px 16px 0; }
+.last-update { font-size: 11px; color: #999; }
+.btn-refresh { font-size: 12px; color: #1976d2; background: none; border: 1px solid #1976d2; border-radius: 8px; padding: 5px 10px; cursor: pointer; }
 .alert { margin: 10px 16px 0; background: #fff8e1; border: 1px solid #f9a825; border-radius: 10px; padding: 9px 12px; font-size: 13px; color: #5d4037; }
 #list { padding: 10px 16px 40px; display: flex; flex-direction: column; gap: 8px; }
-.card { background: #fff; border-radius: 12px; border: 1px solid #e0e0e0; padding: 13px 14px; display: flex; align-items: center; gap: 12px; transition: opacity 0.4s; }
-.card.done { opacity: 0.4; }
-.avatar { width: 40px; height: 40px; border-radius: 50%; background: #ede7f6; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; color: #512da8; flex-shrink: 0; }
+.card { background: #fff; border-radius: 12px; border: 1px solid #e0e0e0; padding: 12px 14px; display: flex; align-items: center; gap: 10px; transition: opacity 0.4s; }
+.card.done { opacity: 0.45; }
+.card.paid { opacity: 0.3; background: #f1f8e9; border-color: #a5d6a7; }
+.avatar { width: 38px; height: 38px; border-radius: 50%; background: #ede7f6; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; color: #512da8; flex-shrink: 0; }
 .info { flex: 1; min-width: 0; }
 .child { font-size: 14px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .parent { font-size: 12px; color: #555; margin-top: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .multi { display: inline-block; background: #fbe9e7; color: #bf360c; font-size: 10px; padding: 1px 6px; border-radius: 20px; margin-left: 5px; font-weight: 700; vertical-align: middle; }
-.btn-wa { display: inline-flex; align-items: center; background: #25D366; color: #fff; border-radius: 10px; padding: 9px 15px; font-size: 13px; font-weight: 700; text-decoration: none; white-space: nowrap; flex-shrink: 0; }
-.btn-done { font-size: 12px; color: #2e7d32; background: #e8f5e9; border-radius: 8px; padding: 8px 11px; white-space: nowrap; flex-shrink: 0; font-weight: 600; display: none; }
-.no-phone { font-size: 12px; color: #999; background: #f5f5f5; border-radius: 8px; padding: 8px 11px; white-space: nowrap; flex-shrink: 0; }
+.btn-wa { display: inline-flex; align-items: center; background: #25D366; color: #fff; border-radius: 10px; padding: 9px 13px; font-size: 13px; font-weight: 700; text-decoration: none; white-space: nowrap; flex-shrink: 0; border: none; cursor: pointer; }
+.btn-done { font-size: 12px; color: #1565c0; background: #e3f2fd; border-radius: 8px; padding: 8px 10px; white-space: nowrap; flex-shrink: 0; font-weight: 600; display: none; }
+.btn-pg { font-size: 12px; color: #2e7d32; background: #e8f5e9; border-radius: 8px; padding: 8px 10px; white-space: nowrap; flex-shrink: 0; font-weight: 600; display: none; }
+.no-phone { font-size: 12px; color: #999; background: #f5f5f5; border-radius: 8px; padding: 8px 10px; white-space: nowrap; flex-shrink: 0; }
+.btn-more { background: none; border: none; font-size: 20px; color: #888; cursor: pointer; padding: 4px 6px; flex-shrink: 0; line-height: 1; border-radius: 8px; }
+.btn-more:active { background: #f0f0f0; }
 #loading { text-align: center; padding: 40px 20px; color: #666; font-size: 15px; }
 #error-msg { margin: 12px 16px; background: #ffebee; border: 1px solid #e57373; border-radius: 10px; padding: 12px 14px; font-size: 13px; color: #b71c1c; display: none; }
 .reload { display: inline-block; margin-top: 6px; font-size: 13px; color: #1976d2; text-decoration: underline; cursor: pointer; background: none; border: none; padding: 0; font-family: inherit; }
+/* Menu popup */
+#menu-popup { display: none; position: fixed; background: #fff; border: 1px solid #ddd; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); z-index: 100; min-width: 200px; overflow: hidden; }
+.menu-item { display: block; width: 100%; text-align: left; padding: 13px 16px; font-size: 14px; background: none; border: none; cursor: pointer; font-family: inherit; color: #111; }
+.menu-item:active { background: #f5f5f5; }
+.menu-item.danger { color: #c62828; }
+.menu-item.success { color: #2e7d32; }
+.menu-separator { height: 1px; background: #eee; }
+/* Confirm dialog */
+#confirm-dialog { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 200; align-items: center; justify-content: center; }
+#confirm-dialog.show { display: flex; }
+.dialog-box { background: #fff; border-radius: 16px; padding: 24px 20px; margin: 16px; max-width: 340px; width: 100%; }
+.dialog-box h3 { font-size: 17px; margin-bottom: 8px; }
+.dialog-box p { font-size: 14px; color: #555; margin-bottom: 20px; line-height: 1.5; }
+.dialog-btns { display: flex; gap: 10px; }
+.dialog-btns button { flex: 1; padding: 12px; border-radius: 10px; font-size: 15px; font-weight: 600; border: none; cursor: pointer; font-family: inherit; }
+.btn-cancel-dialog { background: #f0f0f0; color: #333; }
+.btn-confirm-pg { background: #2e7d32; color: #fff; }
+#overlay { display: none; position: fixed; inset: 0; z-index: 99; }
 </style>
 </head>
 <body>
@@ -46,6 +71,11 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
   <div class="stat"><div class="stat-n" id="ctr-pg">-</div><div class="stat-l">ja pagaram</div></div>
 </div>
 
+<div class="toolbar" id="toolbar" style="display:none;">
+  <span class="last-update" id="last-update"></span>
+  <button class="btn-refresh" onclick="loadData()">&#8635; Atualizar</button>
+</div>
+
 <div class="alert" id="alert-nophone" style="display:none;">
   Atencao: <strong>Vitoria Marques Passos</strong> tem telefone invalido. Contatar manualmente.
 </div>
@@ -57,11 +87,36 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
 
 <div id="list"><div id="loading">Carregando dados da planilha...</div></div>
 
+<!-- Menu popup -->
+<div id="overlay" onclick="closeMenu()"></div>
+<div id="menu-popup">
+  <button class="menu-item danger" id="menu-undo" onclick="menuUndo()">Desfazer contactado</button>
+  <div class="menu-separator"></div>
+  <button class="menu-item success" id="menu-pg" onclick="menuConfirmPG()">Confirmar pagamento (PG)</button>
+</div>
+
+<!-- Confirm payment dialog -->
+<div id="confirm-dialog">
+  <div class="dialog-box">
+    <h3>Confirmar pagamento?</h3>
+    <p id="dialog-msg">Isso vai marcar o pagamento como <strong>PG</strong> na planilha do Google Sheets.</p>
+    <div class="dialog-btns">
+      <button class="btn-cancel-dialog" onclick="closeDialog()">Cancelar</button>
+      <button class="btn-confirm-pg" onclick="executePG()">Confirmar</button>
+    </div>
+  </div>
+</div>
+
 <script>
-var KEY = 'acamp_contactados_v2';
+var SHEET_URL = 'https://docs.google.com/spreadsheets/d/1k8z0-76nVw15gvWAKidFPWJAgKU-tAMoXzT9qxm6s3M/gviz/tq?tqx=out:json';
+var APPS_SCRIPT_URL = 'COLE_AQUI_A_URL_DO_APPS_SCRIPT';
+var KEY_CONTACTED = 'acamp_contactados_v2';
+var KEY_PAID = 'acamp_pagos_v2';
 var MSG = encodeURIComponent('Oi tudo bem? Nos estamos finalizando os preparativos para o nosso acampamento do Alteens, vimos que voce fez a inscricao do seu filho(a), mas nao encontrei o comprovante de pagamento, se voce ja fez, poderia me encaminhar aqui por gentileza? caso nao me avisa pra que a gente possa efetuar o pagamento.');
+
 var allContacts = [];
 var pgCount = 0;
+var activeMenuIdx = -1;
 var loadTimer = null;
 
 function getVal(cell) {
@@ -83,45 +138,43 @@ function initials(name) {
   return p.length === 1 ? p[0][0].toUpperCase() : (p[0][0] + p[p.length-1][0]).toUpperCase();
 }
 
-function getContacted() {
-  try { return JSON.parse(localStorage.getItem(KEY) || '[]'); } catch(e) { return []; }
-}
-
-function saveContacted(arr) {
-  try { localStorage.setItem(KEY, JSON.stringify(arr)); } catch(e) {}
-}
+function getList(key) { try { return JSON.parse(localStorage.getItem(key) || '[]'); } catch(e) { return []; } }
+function saveList(key, arr) { try { localStorage.setItem(key, JSON.stringify(arr)); } catch(e) {} }
+function getContacted() { return getList(KEY_CONTACTED); }
+function getPaid() { return getList(KEY_PAID); }
 
 function updateCounters() {
   var done = getContacted().length;
-  document.getElementById('ctr-pend').textContent = allContacts.length - done;
+  var paid = getPaid().length;
+  document.getElementById('ctr-pend').textContent = Math.max(0, allContacts.length - done - paid);
   document.getElementById('ctr-done').textContent = done;
-  document.getElementById('ctr-pg').textContent = pgCount;
+  document.getElementById('ctr-pg').textContent = pgCount + paid;
 }
 
-function markContacted(idx) {
-  var arr = getContacted();
-  if (arr.indexOf(idx) === -1) { arr.push(idx); saveContacted(arr); }
-  setTimeout(applyContacted, 600);
-}
-
-function applyContacted() {
-  var arr = getContacted();
+function applyStates() {
+  var contacted = getContacted();
+  var paid = getPaid();
   for (var i = 0; i < allContacts.length; i++) {
     var card = document.getElementById('card' + i);
     var btnWa = document.getElementById('wa' + i);
     var btnDone = document.getElementById('done' + i);
+    var btnPg = document.getElementById('pg' + i);
     if (!card) continue;
-    if (arr.indexOf(i) >= 0) {
-      card.classList.add('done');
-      if (btnWa) btnWa.style.display = 'none';
-      if (btnDone) btnDone.style.display = 'inline-block';
-    } else {
-      card.classList.remove('done');
-      if (btnWa) btnWa.style.display = 'inline-flex';
-      if (btnDone) btnDone.style.display = 'none';
-    }
+    var isPaid = paid.indexOf(i) >= 0;
+    var isDone = contacted.indexOf(i) >= 0;
+    card.classList.toggle('paid', isPaid);
+    card.classList.toggle('done', !isPaid && isDone);
+    if (btnWa) btnWa.style.display = (isPaid || isDone) ? 'none' : 'inline-flex';
+    if (btnDone) btnDone.style.display = (!isPaid && isDone) ? 'inline-block' : 'none';
+    if (btnPg) btnPg.style.display = isPaid ? 'inline-block' : 'none';
   }
   updateCounters();
+}
+
+function markContacted(idx) {
+  var arr = getContacted();
+  if (arr.indexOf(idx) === -1) { arr.push(idx); saveList(KEY_CONTACTED, arr); }
+  setTimeout(applyStates, 600);
 }
 
 function filterList(q) {
@@ -131,6 +184,89 @@ function filterList(q) {
     var text = cards[i].getAttribute('data-search');
     cards[i].style.display = (!q || text.indexOf(q) >= 0) ? 'flex' : 'none';
   }
+}
+
+function toggleMenu(event, idx) {
+  event.stopPropagation();
+  if (activeMenuIdx === idx) { closeMenu(); return; }
+  activeMenuIdx = idx;
+  var btn = document.getElementById('more' + idx);
+  var popup = document.getElementById('menu-popup');
+  var contacted = getContacted();
+  var paid = getPaid();
+  document.getElementById('menu-undo').style.display = (contacted.indexOf(idx) >= 0 && paid.indexOf(idx) < 0) ? 'block' : 'none';
+  document.getElementById('menu-pg').style.display = paid.indexOf(idx) < 0 ? 'block' : 'none';
+  var rect = btn.getBoundingClientRect();
+  popup.style.right = '16px';
+  popup.style.left = 'auto';
+  popup.style.top = (rect.bottom + 4) + 'px';
+  popup.style.display = 'block';
+  document.getElementById('overlay').style.display = 'block';
+}
+
+function closeMenu() {
+  activeMenuIdx = -1;
+  document.getElementById('menu-popup').style.display = 'none';
+  document.getElementById('overlay').style.display = 'none';
+}
+
+function menuUndo() {
+  closeMenu();
+  var arr = getContacted();
+  var idx = arr.indexOf(activeMenuIdx >= 0 ? activeMenuIdx : -99);
+  arr = getContacted();
+  arr = arr.filter(function(x) { return x !== activeMenuIdx; });
+  activeMenuIdx = -1;
+  saveList(KEY_CONTACTED, arr);
+  applyStates();
+}
+
+function menuConfirmPG() {
+  var idx = activeMenuIdx;
+  closeMenu();
+  activeMenuIdx = idx;
+  var d = allContacts[idx];
+  document.getElementById('dialog-msg').innerHTML = 'Marcar <strong>' + d.child + '</strong> como pago (PG) na planilha?';
+  document.getElementById('confirm-dialog').classList.add('show');
+}
+
+function closeDialog() {
+  document.getElementById('confirm-dialog').classList.remove('show');
+  activeMenuIdx = -1;
+}
+
+function executePG() {
+  var idx = activeMenuIdx;
+  var d = allContacts[idx];
+  closeDialog();
+
+  if (APPS_SCRIPT_URL === 'COLE_AQUI_A_URL_DO_APPS_SCRIPT') {
+    var arr = getPaid();
+    if (arr.indexOf(idx) === -1) { arr.push(idx); saveList(KEY_PAID, arr); }
+    var contacted = getContacted().filter(function(x) { return x !== idx; });
+    saveList(KEY_CONTACTED, contacted);
+    applyStates();
+    alert('Pagamento marcado localmente.\n\nPara atualizar a planilha, configure o Apps Script (veja as instrucoes).');
+    return;
+  }
+
+  var url = APPS_SCRIPT_URL + '?name=' + encodeURIComponent(d.child);
+  var btn = document.getElementById('more' + idx);
+  if (btn) btn.textContent = '...';
+
+  fetch(url)
+    .then(function(r) { return r.json(); })
+    .then(function(res) {
+      var arr = getPaid();
+      if (arr.indexOf(idx) === -1) { arr.push(idx); saveList(KEY_PAID, arr); }
+      var contacted = getContacted().filter(function(x) { return x !== idx; });
+      saveList(KEY_CONTACTED, contacted);
+      applyStates();
+    })
+    .catch(function() {
+      alert('Erro ao atualizar a planilha. Verifique sua conexao.');
+      if (btn) btn.textContent = '⋮';
+    });
 }
 
 function renderList() {
@@ -144,21 +280,28 @@ function renderList() {
     var d = allContacts[i];
     var multi = (d.phone && phoneCount[d.phone] > 1) ? '<span class="multi">+irmao</span>' : '';
     var searchText = (d.child + ' ' + d.parent).toLowerCase();
-    var btns = d.phone
-      ? '<a id="wa' + i + '" class="btn-wa" href="https://wa.me/' + d.phone + '?text=' + MSG + '" target="_blank" onclick="markContacted(' + i + ')">WhatsApp</a><span id="done' + i + '" class="btn-done">Contactado</span>'
+    var actionArea = d.phone
+      ? '<a id="wa' + i + '" class="btn-wa" href="https://wa.me/' + d.phone + '?text=' + MSG + '" target="_blank" onclick="markContacted(' + i + ')">WhatsApp</a>'
+        + '<span id="done' + i + '" class="btn-done">Contactado</span>'
+        + '<span id="pg' + i + '" class="btn-pg">Pago ✓</span>'
       : '<span class="no-phone">Sem telefone</span>';
     html += '<div id="card' + i + '" class="card" data-search="' + searchText + '">'
           + '<div class="avatar">' + initials(d.child) + '</div>'
           + '<div class="info"><div class="child">' + d.child + multi + '</div><div class="parent">' + d.parent + '</div></div>'
-          + btns + '</div>';
+          + actionArea
+          + '<button id="more' + i + '" class="btn-more" onclick="toggleMenu(event,' + i + ')">&#8942;</button>'
+          + '</div>';
   }
   document.getElementById('list').innerHTML = html || '<div id="loading">Nenhum pendente encontrado.</div>';
   document.getElementById('stats').style.display = 'flex';
+  document.getElementById('toolbar').style.display = 'flex';
   document.getElementById('search').disabled = false;
   document.getElementById('subtitulo').textContent = 'Acampamento Alteens — ' + allContacts.length + ' pendentes';
   if (allContacts.some(function(d) { return !d.phone; }))
     document.getElementById('alert-nophone').style.display = 'block';
-  applyContacted();
+  var now = new Date();
+  document.getElementById('last-update').textContent = 'Atualizado ' + now.toLocaleTimeString('pt-BR', {hour:'2-digit',minute:'2-digit'});
+  applyStates();
 }
 
 window.google = window.google || {};
@@ -170,7 +313,6 @@ window.handleSheetData = function(data) {
   if (loadTimer) { clearTimeout(loadTimer); loadTimer = null; }
   var old = document.getElementById('jsonp-script');
   if (old) old.parentNode.removeChild(old);
-
   try {
     var rows = data.table.rows;
     pgCount = 0;
@@ -190,9 +332,7 @@ window.handleSheetData = function(data) {
     allContacts = Object.keys(byName).map(function(k) { return byName[k]; })
       .sort(function(a, b) { return a.child.localeCompare(b.child); });
     renderList();
-  } catch(e) {
-    showError();
-  }
+  } catch(e) { showError(); }
 };
 
 function showError() {
@@ -205,17 +345,15 @@ function loadData() {
   document.getElementById('list').innerHTML = '<div id="loading">Carregando dados da planilha...</div>';
   document.getElementById('error-msg').style.display = 'none';
   document.getElementById('stats').style.display = 'none';
+  document.getElementById('toolbar').style.display = 'none';
   document.getElementById('search').disabled = true;
-
   var old = document.getElementById('jsonp-script');
   if (old) old.parentNode.removeChild(old);
-
   var script = document.createElement('script');
   script.id = 'jsonp-script';
-  script.src = 'https://docs.google.com/spreadsheets/d/1k8z0-76nVw15gvWAKidFPWJAgKU-tAMoXzT9qxm6s3M/gviz/tq?tqx=out:json&callback=handleSheetData';
+  script.src = SHEET_URL + '&_=' + Date.now();
   script.onerror = showError;
   document.head.appendChild(script);
-
   loadTimer = setTimeout(showError, 10000);
 }
 
