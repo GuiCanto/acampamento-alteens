@@ -451,14 +451,18 @@ function menuConfirmPG(){
 function closeDialog(){ document.getElementById('confirm-dialog').classList.remove('show'); activeMenuName=null; }
 function executePG(){
   var name=activeMenuName; closeDialog();
+  // Update locally first so the UI reflects immediately
+  var p=getList(KEY_P); if(p.indexOf(name)<0){p.push(name);saveList(KEY_P,p);}
+  saveList(KEY_C,getList(KEY_C).filter(function(x){return x!==name;}));
+  applyPayStates(); updateBell();
+  // Sync to sheet in background
   fetch(APPS_URL+'?action=pg&name='+encodeURIComponent(name))
-    .then(function(r){return r.json();})
-    .then(function(){
-      var p=getList(KEY_P); if(p.indexOf(name)<0){p.push(name);saveList(KEY_P,p);}
-      saveList(KEY_C,getList(KEY_C).filter(function(x){return x!==name;}));
+    .catch(function(){
+      // Revert local state on failure
+      saveList(KEY_P,getList(KEY_P).filter(function(x){return x!==name;}));
       applyPayStates(); updateBell();
-    })
-    .catch(function(){ alert('Erro ao atualizar planilha. Verifique conexao.'); });
+      alert('Erro ao atualizar planilha. Verifique conexao.');
+    });
 }
 
 // ══════════════════════════
